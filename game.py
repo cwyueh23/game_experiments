@@ -1,6 +1,7 @@
 import numpy as np
 import random
 
+# player 1 is always the maximizer and player 2 is the minimizer
 class game:
     def __init___(self,seed=782):
         self.rng = np.random.default_rng(seed)
@@ -62,18 +63,22 @@ class grid_game(game):
         s1_next=self.move(s_1,a_1)
         s2_next=self.move(s_2,a_2)
         if s1_next==s2_next:
+            '''
             if s1_next==4:
                 reward=-4
             else:
-                reward=-2
+            '''
+            reward=-2
         else:
             column_1=s1_next//3
             row_1=s1_next%3
             column_2=s2_next//3
             row_2=s2_next%3
             reward=np.sqrt((column_1-column_2)**2+(row_1-row_2)**2)
+            '''
             if s1_next==4:
                 reward+=2
+            '''
         return reward
 
     def r_matrix(self):

@@ -9,8 +9,8 @@ def play_eq(agent_1,agent_2,game,tau=10,episodes=1000):
     state_num=game.state_num
     init_prob=np.ones(state_num)/state_num
 
-    V_optimal_max = solve_value_max(game,tau)  # Optimal value for maximizing agent
-    V_optimal_min = solve_value_min(game,tau)  # Optimal value for minimizing agent
+    V_optimal_max = solve_value(game.T,game,tau,maximum=True)  # Optimal value for maximizing agent
+    V_optimal_min = solve_value(game.T,game,tau,maximum=False)  # Optimal value for minimizing agent
 
     # Lists to store records and regret
     record = []
@@ -50,8 +50,8 @@ def play_eq(agent_1,agent_2,game,tau=10,episodes=1000):
             next_s = game.Transition(s, a_1, a_2)
 
             # Update agents' prior knowledge based on the transition
-            agent_1.update_prior(next_s, s, a_1, a_2)
-            agent_2.update_prior(next_s, s, a_1, a_2)
+            agent_1.update_prior(next_s, s, a_1, a_2,t)
+            agent_2.update_prior(next_s, s, a_1, a_2,t)
 
             # Record the state, actions, and rewards for this timestep
             record_ep.append((s, a_1, a_2, reward))
@@ -129,8 +129,8 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000):
     state_num=game.state_num
     init_prob=np.ones(state_num)/state_num
 
-    V_optimal_max = solve_value_max(game,tau)  # Optimal value for maximizing agent
-    V_optimal_min = solve_value_min(game,tau)  # Optimal value for minimizing agent
+    V_optimal_max = solve_value(game.T,game,tau,maximum=True)  # Optimal value for maximizing agent
+    V_optimal_min = solve_value(game.T,game,tau,maximum=False)  # Optimal value for minimizing agent
 
     # Lists to store records and regret
     record = []
@@ -168,8 +168,8 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000):
             next_s = game.Transition(s, a_1, a_2)
 
             # Update agents' prior knowledge based on the transition
-            agent_1.update_prior(next_s, s, a_1, a_2)
-            agent_2.update_prior(next_s, s, a_1, a_2)
+            agent_1.update_prior(next_s, s, a_1, a_2,t)
+            agent_2.update_prior(next_s, s, a_1, a_2,t)
 
             # Record the state, actions, and rewards for this timestep
             record_ep.append((s, a_1, a_2, reward))
@@ -185,7 +185,7 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000):
         record.append(record_ep)
         pi2=agent_2.get_strategy()
         # Calculate and store the regret for this episode
-        regret_agent_1.append(solve_value_by_strategy(s_0,game,tau,pi2) - total_reward_agent_1)
+        regret_agent_1.append(solve_value_by_strategy(game.T,game,tau,pi2)[0,s_0] - total_reward_agent_1)
 
         # Store the episode record
         record.append(record_ep)
@@ -208,6 +208,7 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000):
     plt.title('Regret Over Episodes for Agent 1 and Agent 2')
     plt.legend()
     plt.show()
+    plt.savefig('regret.png')
 
     regret_cumulative_1=[]
     for i in range(episodes):
@@ -222,6 +223,7 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000):
     plt.title('Time-Averaged Regret Over Episodes for Agent 1')
     plt.legend()
     plt.show()
+    plt.savefig('avgregret.png')
 
     print(regret_cumulative_1[-1])
     #print(regret_cumulative_2[-1])
@@ -237,3 +239,4 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000):
     plt.title('Distance Measures Over Episodes')
     plt.legend()
     plt.show()
+    plt.savefig('distance.png')

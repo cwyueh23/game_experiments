@@ -8,8 +8,8 @@ import cvxpy as cp
 game_1=grid_game()
 
 #create agents
-agent_1=Agent_eq(game_1,10,False)
-agent_2=Agent_eq(game_1,10,True)
+agent_1=Agent_ps(game_1,10,False)
+agent_2=Agent_fp_true(game_1,10,True)
 
 #execute the game
-play_single(agent_1, agent_2, game_1, tau=10, episodes=300)
+play_eq(agent_1, agent_2, game_1, tau=10, episodes=2000)
