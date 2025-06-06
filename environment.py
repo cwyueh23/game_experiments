@@ -4,7 +4,7 @@ from agent import *
 from game import *
 from utility import *
 
-def play_eq(agent_1,agent_2,game,tau=10,episodes=1000):
+def play_eq(agent_1,agent_2,game,tau=10,episodes=1000,filename='',test_best=0):
 
     state_num=game.state_num
     init_prob=np.ones(state_num)/state_num
@@ -27,11 +27,17 @@ def play_eq(agent_1,agent_2,game,tau=10,episodes=1000):
 
         agent_1.sample_model()
         agent_2.sample_model()
-
         # Agents solve for the value function
-        agent_1.solve_value()
-        agent_2.solve_value()
-
+        if test_best==0:
+            agent_1.solve_value()
+            agent_2.solve_value()
+        elif test_best==1:
+            agent_1.solve_value()
+            agent_2.solve_value(agent_1.get_strategy())
+        elif test_best==2:
+            agent_2.solve_value()
+            agent_1.solve_value(agent_2.get_strategy())
+            
         #s = 72  # Starting state
         s=np.random.choice(range(state_num), p=init_prob)
         s_0=s
@@ -84,13 +90,15 @@ def play_eq(agent_1,agent_2,game,tau=10,episodes=1000):
     #print(record)
 
     # Plot the regret for both agents over episodes
+    plt.figure()
     plt.plot(range(episodes), regret_agent_1, label='Agent 1 Regret')
     plt.plot(range(episodes), regret_agent_2, label='Agent 2 Regret')
     plt.xlabel('Episode')
     plt.ylabel('Regret')
     plt.title('Regret Over Episodes for Agent 1 and Agent 2')
     plt.legend()
-    plt.show()
+    plt.savefig(filename+'_regret_eq.png')
+
 
     regret_cumulative_1=[]
     regret_cumulative_2=[]
@@ -98,6 +106,7 @@ def play_eq(agent_1,agent_2,game,tau=10,episodes=1000):
         regret_cumulative_1.append(sum(regret_agent_1[:i])/(i+1))
         regret_cumulative_2.append(sum(regret_agent_2[:i])/(i+1))
 
+    plt.figure()
     plt.plot(range(episodes), regret_cumulative_1, label='Agent 1 Time-Averaged Regret')
     plt.plot(range(episodes), regret_cumulative_2, label='Agent 2 Time_Averaged Regret')
 
@@ -105,7 +114,8 @@ def play_eq(agent_1,agent_2,game,tau=10,episodes=1000):
     plt.ylabel('Time-Averaged Regret')
     plt.title('Time-Averaged Regret Over Episodes for Agent 1 and Agent 2')
     plt.legend()
-    plt.show()
+    plt.savefig(filename+'_regret_eq_cumulative.png')
+
 
     print(regret_cumulative_1[-1])
     print(regret_cumulative_2[-1])
@@ -120,11 +130,13 @@ def play_eq(agent_1,agent_2,game,tau=10,episodes=1000):
     plt.ylabel('Measure Value')
     plt.title('Distance Measures Over Episodes')
     plt.legend()
+    plt.savefig(filename+'_distance_eq.png')
     plt.show()
 
 
 
-def play_single(agent_1,agent_2,game,tau=10,episodes=1000):
+def play_single(agent_1,agent_2,game,tau=10,episodes=1000,filename='',test_best=0):
+
 
     state_num=game.state_num
     init_prob=np.ones(state_num)/state_num
@@ -146,9 +158,16 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000):
         agent_1.sample_model()
         agent_2.sample_model()
 
-        # Agents solve for the value function
-        agent_1.solve_value()
-        agent_2.solve_value()
+        # Agents solve for the value function and determine strategies
+        if test_best==0:
+            agent_1.solve_value()
+            agent_2.solve_value()
+        elif test_best==1:
+            agent_1.solve_value()
+            agent_2.solve_value(agent_1.get_strategy())
+        elif test_best==2:
+            agent_2.solve_value()
+            agent_1.solve_value(agent_2.get_strategy())
 
         #s = 72  # Starting state
         s=np.random.choice(range(state_num), p=init_prob)
@@ -183,9 +202,11 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000):
 
         # Store the episode record
         record.append(record_ep)
+        pi1=agent_1.get_strategy()
         pi2=agent_2.get_strategy()
         # Calculate and store the regret for this episode
         regret_agent_1.append(solve_value_by_strategy(game.T,game,tau,pi2)[0,s_0] - total_reward_agent_1)
+        regret_agent_2.append(-total_reward_agent_2 - solve_value_by_strategy(game.T,game,tau,pi1,maximal=False)[0,s_0] )
 
         # Store the episode record
         record.append(record_ep)
@@ -199,34 +220,36 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000):
 
         # Display the recorded episode data (optional)
         #print(record)
-
+        
+    fig1, ax1 = plt.subplots()
     # Plot the regret for both agents over episodes
-    plt.plot(range(episodes), regret_agent_1, label='Agent 1 Regret')
-    #plt.plot(range(episodes), regret_agent_2, label='Agent 2 Regret')
-    plt.xlabel('Episode')
-    plt.ylabel('Regret')
-    plt.title('Regret Over Episodes for Agent 1 and Agent 2')
-    plt.legend()
-    plt.show()
-    plt.savefig('regret.png')
+    ax1.plot(range(episodes), regret_agent_1, label='Agent 1 Regret')
+    ax1.plot(range(episodes), regret_agent_2, label='Agent 2 Regret')
+    ax1.set_xlabel('Episode')
+    ax1.set_ylabel('Regret')
+    ax1.set_title('Regret Over Episodes for Agent 1 and Agent 2')
+    ax1.legend()
+    fig1.savefig(filename+'_regret.png')
 
     regret_cumulative_1=[]
+    regret_cumulative_2=[]
     for i in range(episodes):
         regret_cumulative_1.append(sum(regret_agent_1[:i])/(i+1))
-    #regret_cumulative_2.append(sum(regret_agent_2[:i])/(i+1))
+        regret_cumulative_2.append(sum(regret_agent_2[:i])/(i+1))
 
-    plt.plot(range(episodes), regret_cumulative_1, label='Agent 1 Time-Averaged Regret')
-    #plt.plot(range(episodes), regret_cumulative_2, label='Agent 2 cumulative Regret')
+    fig2, ax2 = plt.subplots()
+    ax2.plot(range(episodes), regret_cumulative_1, label='Agent 1 Time-Averaged Regret')
+    ax2.plot(range(episodes), regret_cumulative_2, label='Agent 2 Time-Averaged Regret')
 
-    plt.xlabel('Episode')
-    plt.ylabel('Regret')
-    plt.title('Time-Averaged Regret Over Episodes for Agent 1')
-    plt.legend()
-    plt.show()
-    plt.savefig('avgregret.png')
+    ax2.set_xlabel('Episode')
+    ax2.set_ylabel('Regret')
+    ax2.set_title('Time-Averaged Regret Over Episodes for Agent 1')
+    ax2.legend()
+    fig2.savefig(filename+'_avgregret.png')
+    #fig2.show()
 
     print(regret_cumulative_1[-1])
-    #print(regret_cumulative_2[-1])
+    print(regret_cumulative_2[-1])
 
     # Plot all measures over episodes
     plt.figure()
@@ -238,5 +261,9 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000):
     plt.ylabel('Measure Value')
     plt.title('Distance Measures Over Episodes')
     plt.legend()
+    plt.savefig(filename+'_distance.png')
+    
     plt.show()
-    plt.savefig('distance.png')
+    
+    return regret_cumulative_1,regret_cumulative_2
+    regret_cumulative_2=[]

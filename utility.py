@@ -127,7 +127,7 @@ def solve_value_by_strategy(T,game,tau,pi,maximal=True):
     for t in range(tau):  # Run value iteration
       for s in range(state_num):
           if maximal:
-            V[tau-t-1,s] = max(np.dot(R[s, a1] + np.dot(T[s, a1], V[tau-t]),pi[t][s]) for a1 in range(action_1_num))
+            V[tau-t-1,s] = max(np.dot(R[s, a1] + np.dot(T[s, a1], V[tau-t]),pi[tau-t-1][s]) for a1 in range(action_1_num))
           else:
-            V[tau-t-1,s] = min(np.dot(R[s, :,a2] + np.dot(T[s,:, a2], V[tau-t]),pi[t][s]) for a2 in range(action_2_num))
+            V[tau-t-1,s] = min(np.dot(R[s, :,a2] + np.dot(T[s,:, a2], V[tau-t]),pi[tau-t-1][s]) for a2 in range(action_2_num))
     return V
