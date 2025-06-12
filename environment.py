@@ -133,7 +133,7 @@ def play_eq(agent_1,agent_2,game,tau=10,episodes=1000,filename='',test_best=0):
     plt.savefig(filename+'_distance_eq.png')
     plt.show()
 
-
+    return regret_cumulative_1,regret_cumulative_2
 
 def play_single(agent_1,agent_2,game,tau=10,episodes=1000,filename='',test_best=0):
 
