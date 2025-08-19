@@ -46,34 +46,37 @@ seeds_0=[2847,5938,184,84274,693457,82472]
 seeds=[1915,7736,82714,2571,4663,284,681,9892,2]
 for i in range(5):
     results=[[] for _ in range(18)]
+
     agent_1_list=[
     Agent_ps(game_1,10,False,seed=seeds_0[i]),
-    Agent_ps(game_1,10,False,seed=seeds_0[i]),
-    Agent_ps(game_1,10,False,seed=seeds_0[i]),
-    Agent_ps(game_1,10,False,seed=seeds_0[i]),
-    Agent_ps(game_1,10,False,seed=seeds_0[i]),
-    Agent_ps(game_1,10,False,seed=seeds_0[i]),
-    Agent_ps(game_1,10,False,seed=seeds_0[i]),
-    Agent_ps(game_1,10,False,seed=seeds_0[i]),
-    Agent_ps(game_1,10,False,seed=seeds_0[i])]
+    #Agent_ps(game_1,10,False,seed=seeds_0[i]),
+    #Agent_ps(game_1,10,False,seed=seeds_0[i]),
+    ##Agent_ps(game_1,10,False,seed=seeds_0[i]),
+    #Agent_ps(game_1,10,False,seed=seeds_0[i]),
+    #Agent_ps(game_1,10,False,seed=seeds_0[i]),
+    #Agent_ps(game_1,10,False,seed=seeds_0[i]),
+    #Agent_ps(game_1,10,False,seed=seeds_0[i]),
+    #Agent_ps(game_1,10,False,seed=seeds_0[i])
+    ]
 
     agent_2_list=[
-    Agent_eq(game_1,10,True,seed=seeds[i]),
-    Agent_ps_map(game_1,10,True,seed=seeds[i]),
+    #Agent_eq(game_1,10,True,seed=seeds[i]),
+    #Agent_ps_map(game_1,10,True,seed=seeds[i]),
     Agent_ps(game_1,10,True,seed=seeds[i]),
-    Agent_fp_true(game_1,10,True,seed=seeds[i]),
-    Agent_fp_map(game_1,10,True,seed=seeds[i]),
-    Agent_fp(game_1,10,True,seed=seeds[i]),
-    Agent_sample_true(game_1,10,True,seed=seeds[i]),
-    Agent_sample_map(game_1,10,True,seed=seeds[i]),
-    Agent_sample_ps(game_1,10,True,seed=seeds[i])]
-    for j in range(9):
+    #Agent_fp_true(game_1,10,True,seed=seeds[i]),
+    #Agent_fp_map(game_1,10,True,seed=seeds[i]),
+    #Agent_fp(game_1,10,True,seed=seeds[i]),
+    #Agent_sample_true(game_1,10,True,seed=seeds[i]),
+    #Agent_sample_map(game_1,10,True,seed=seeds[i]),
+    #Agent_sample_ps(game_1,10,True,seed=seeds[i])
+    ]
+    for j in range(1):
         a,b=play_eq( agent_1_list[j],agent_2_list[j], game_1, tau=10, episodes=1000,filename=str(j))
         results[2*j].append(a)
         results[2*j+1].append(b)
 
 
-for i in range(9):
+for i in range(1):
     data_1=np.array(results[2*i])
     data_2=np.array(results[2*i+1])
     mean_1=np.mean(data_1,axis=0)
@@ -82,7 +85,7 @@ for i in range(9):
     std_2=np.sqrt(np.std(data_2,axis=0))
     
     x = np.arange(mean_1.shape[0])
-
+    
     # Plot mean
     plt.plot(x, mean_1, label='Agent_1', color='blue')
     # Plot confidence interval: mean ± std deviation
@@ -97,6 +100,7 @@ for i in range(9):
     plt.xlabel('Episodes')
     plt.ylabel('Time-Averaged Regret')
     #plt.title('Cumulative Regret Comparison')
+    plt.grid()
     plt.savefig(str(i)+'_regret1.png')
     
     

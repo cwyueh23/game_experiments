@@ -245,6 +245,7 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000,filename='',test_best=
     ax2.set_ylabel('Regret')
     ax2.set_title('Time-Averaged Regret Over Episodes for Agent 1')
     ax2.legend()
+    ax2.grid()
     fig2.savefig(filename+'_avgregret.png')
     #fig2.show()
 
@@ -262,8 +263,8 @@ def play_single(agent_1,agent_2,game,tau=10,episodes=1000,filename='',test_best=
     plt.title('Distance Measures Over Episodes')
     plt.legend()
     plt.savefig(filename+'_distance.png')
-    
-    plt.show()
+
+    #plt.show()
     
     return regret_cumulative_1,regret_cumulative_2
     regret_cumulative_2=[]
