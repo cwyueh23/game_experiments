@@ -44,14 +44,14 @@ play_eq( agent_09,agent_9, game_1, tau=10, episodes=1000,filename='9')
 '''
 seeds_0=[2847,5938,184,84274,693457,82472]
 seeds=[1915,7736,82714,2571,4663,284,681,9892,2]
-for i in range(5):
+for i in range(1):
     results=[[] for _ in range(18)]
 
     agent_1_list=[
     Agent_ps(game_1,10,False,seed=seeds_0[i]),
-    #Agent_ps(game_1,10,False,seed=seeds_0[i]),
-    #Agent_ps(game_1,10,False,seed=seeds_0[i]),
-    ##Agent_ps(game_1,10,False,seed=seeds_0[i]),
+    Agent_ps(game_1,10,False,seed=seeds_0[i]),
+    Agent_ps(game_1,10,False,seed=seeds_0[i]),
+    Agent_ps(game_1,10,False,seed=seeds_0[i]),
     #Agent_ps(game_1,10,False,seed=seeds_0[i]),
     #Agent_ps(game_1,10,False,seed=seeds_0[i]),
     #Agent_ps(game_1,10,False,seed=seeds_0[i]),
@@ -60,23 +60,63 @@ for i in range(5):
     ]
 
     agent_2_list=[
-    #Agent_eq(game_1,10,True,seed=seeds[i]),
+    Agent_eq(game_1,10,True,seed=seeds[i]),
     #Agent_ps_map(game_1,10,True,seed=seeds[i]),
     Agent_ps(game_1,10,True,seed=seeds[i]),
     #Agent_fp_true(game_1,10,True,seed=seeds[i]),
     #Agent_fp_map(game_1,10,True,seed=seeds[i]),
-    #Agent_fp(game_1,10,True,seed=seeds[i]),
+    Agent_fp(game_1,10,True,seed=seeds[i]),
     #Agent_sample_true(game_1,10,True,seed=seeds[i]),
     #Agent_sample_map(game_1,10,True,seed=seeds[i]),
     #Agent_sample_ps(game_1,10,True,seed=seeds[i])
     ]
-    for j in range(1):
-        a,b=play_eq( agent_1_list[j],agent_2_list[j], game_1, tau=10, episodes=1000,filename=str(j))
+    for j in range(3):
+        a,b=play_eq( agent_1_list[j],agent_2_list[j], game_1, tau=10, episodes=1000,filename=str(j)+'pub')
         results[2*j].append(a)
         results[2*j+1].append(b)
 
 
 for i in range(1):
+    data_1=np.array(results[0]).flatten()
+    data_2=np.array(results[2]).flatten()
+    data_3=np.array(results[4]).flatten()
+    #data_4=np.array(results[6]).flatten()
+
+    x=np.arange(data_1.shape[0])
+    
+    plt.figure(0)
+    plt.plot(x, data_1, label='eq')
+    plt.plot(x, data_2, label='ps')
+    plt.plot(x, data_3, label='fp')
+    #plt.plot(x, data_4, label='fp_true')
+    
+    plt.legend()    
+    plt.xlabel('Episodes')
+    plt.ylabel('Time-Averaged Regret')
+    #plt.title('Cumulative Regret Comparison')
+    plt.grid()
+    plt.savefig('final_regret_avg.png')
+
+    plt.figure(1)
+    for i in range(data_1.shape[0]):
+        data_1[i]=data_1[i]*(i+1)
+        data_2[i]=data_2[i]*(i+1)
+        data_3[i]=data_3[i]*(i+1)
+        #data_4[i]=data_4[i]*(i+1)
+
+    plt.plot(x, data_1, label='eq')
+    plt.plot(x, data_2, label='ps')
+    plt.plot(x, data_3, label='fp')
+    #plt.plot(x, data_4, label='fp_true')
+    
+    plt.legend()    
+    plt.xlabel('Episodes')
+    plt.ylabel('Time-Averaged Regret')
+    #plt.title('Cumulative Regret Comparison')
+    plt.grid()
+    plt.savefig('final_regret_cu.png')
+
+    '''
     data_1=np.array(results[2*i])
     data_2=np.array(results[2*i+1])
     mean_1=np.mean(data_1,axis=0)
@@ -102,7 +142,7 @@ for i in range(1):
     #plt.title('Cumulative Regret Comparison')
     plt.grid()
     plt.savefig(str(i)+'_regret1.png')
-    
+    '''
     
 '''
 a,b=play_single( agent_0,agent_test, game_1, tau=10, episodes=1000,filename='best_reverse',test_best=1)

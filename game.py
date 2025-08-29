@@ -60,14 +60,16 @@ class grid_game(game):
     def r(self,s,a_1,a_2):
         s_1=s%9
         s_2=s//9
+        reward=-1
+        if s_1%3==s_1%3:
+            reward+=1
+        if s_1//3==s_2//3:
+            reward+=1
+        
+        '''
         s1_next=self.move(s_1,a_1)
         s2_next=self.move(s_2,a_2)
         if s1_next==s2_next:
-            '''
-            if s1_next==4:
-                reward=-4
-            else:
-            '''
             reward=-2
         else:
             column_1=s1_next//3
@@ -75,10 +77,7 @@ class grid_game(game):
             column_2=s2_next//3
             row_2=s2_next%3
             reward=np.sqrt((column_1-column_2)**2+(row_1-row_2)**2)
-            '''
-            if s1_next==4:
-                reward+=2
-            '''
+        '''
         return reward
 
     def r_matrix(self):
